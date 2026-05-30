@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
 require("dotenv").config();
 
 const authRoutes = require("./routes/authRoutes");
@@ -9,6 +10,7 @@ const adminRoutes = require("./routes/adminRoutes");
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 mongoose
@@ -22,22 +24,14 @@ mongoose
     console.log(err);
   });
 
-
-// Home Route
 app.get("/", (req, res) => {
   res.send("Doctor Booking API Running...");
 });
 
-
-// Routes
 app.use("/api/auth", authRoutes);
-
 app.use("/api/doctors", doctorRoutes);
-
 app.use("/api/appointments", appointmentRoutes);
-
 app.use("/api/admin", adminRoutes);
-
 
 const PORT = process.env.PORT || 5000;
 
