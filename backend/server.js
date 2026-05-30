@@ -1,153 +1,46 @@
 const express = require("express");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
+require("dotenv").config();
 
-const User = require("../models/User");
+const authRoutes = require("./routes/authRoutes");
+const doctorRoutes = require("./routes/doctorRoutes");
+const appointmentRoutes = require("./routes/appointmentRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 
-const router = express.Router();
+const app = express();
 
-/*
-|--------------------------------------------------------------------------
-| REGISTER
-|--------------------------------------------------------------------------
-*/
-router.post("/register", async (req, res) => {
-  try {
+app.use(express.json());
 
-    const {
-      name,
-      email,
-      password,
-      role
-    } = req.body;
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("MongoDB Connected");
+    console.log("Database:", mongoose.connection.name);
+    console.log("Host:", mongoose.connection.host);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 
-    if (!name || !email || !password) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Name, email and password are required"
-      });
-    }
 
-    const existingUser =
-      await User.findOne({ email });
-
-    if (existingUser) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "User already exists"
-      });
-    }
-
-    const hashedPassword =
-      await bcrypt.hash(password, 10);
-
-    const user = await User.create({
-      name,
-      email,
-      password: hashedPassword,
-      role
-    });
-
-    res.status(201).json({
-      success: true,
-      message:
-        "User registered successfully",
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role
-      }
-    });
-
-  } catch (error) {
-
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-
-  }
+// Home Route
+app.get("/", (req, res) => {
+  res.send("Doctor Booking API Running...");
 });
 
-/*
-|--------------------------------------------------------------------------
-| LOGIN
-|--------------------------------------------------------------------------
-*/
-router.post("/login", async (req, res) => {
-  try {
 
-    const {
-      email,
-      password
-    } = req.body;
+// Routes
+app.use("/api/auth", authRoutes);
 
-    if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Email and password are required"
-      });
-    }
+app.use("/api/doctors", doctorRoutes);
 
-    const user =
-      await User.findOne({ email });
+app.use("/api/appointments", appointmentRoutes);
 
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message:
-          "User not found"
-      });
-    }
+app.use("/api/admin", adminRoutes);
 
-    const isMatch =
-      await bcrypt.compare(
-        password,
-        user.password
-      );
 
-    if (!isMatch) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Invalid credentials"
-      });
-    }
+const PORT = process.env.PORT || 5000;
 
-    const token = jwt.sign(
-      {
-        id: user._id,
-        role: user.role
-      },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "7d"
-      }
-    );
-
-    res.status(200).json({
-      success: true,
-      token,
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role
-      }
-    });
-
-  } catch (error) {
-
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-
-  }
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
-
-module.exports = router;

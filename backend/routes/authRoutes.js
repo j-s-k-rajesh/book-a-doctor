@@ -6,18 +6,37 @@ const User = require("../models/User");
 
 const router = express.Router();
 
+/*
+|--------------------------------------------------------------------------
+| REGISTER
+|--------------------------------------------------------------------------
+*/
 router.post("/register", async (req, res) => {
   try {
 
-    const { name, email, password, role } = req.body;
+    const {
+      name,
+      email,
+      password,
+      role
+    } = req.body;
 
-    const existingUser = await User.findOne({
-      email
-    });
+    if (!name || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Name, email and password are required"
+      });
+    }
+
+    const existingUser =
+      await User.findOne({ email });
 
     if (existingUser) {
       return res.status(400).json({
-        message: "User already exists"
+        success: false,
+        message:
+          "User already exists"
       });
     }
 
@@ -32,31 +51,56 @@ router.post("/register", async (req, res) => {
     });
 
     res.status(201).json({
-      message: "User registered successfully",
-      user
+      success: true,
+      message:
+        "User registered successfully",
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
     });
 
   } catch (error) {
 
     res.status(500).json({
+      success: false,
       message: error.message
     });
 
   }
 });
 
+/*
+|--------------------------------------------------------------------------
+| LOGIN
+|--------------------------------------------------------------------------
+*/
 router.post("/login", async (req, res) => {
   try {
 
-    const { email, password } = req.body;
+    const {
+      email,
+      password
+    } = req.body;
 
-    const user = await User.findOne({
-      email
-    });
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Email and password are required"
+      });
+    }
+
+    const user =
+      await User.findOne({ email });
 
     if (!user) {
       return res.status(404).json({
-        message: "User not found"
+        success: false,
+        message:
+          "User not found"
       });
     }
 
@@ -68,7 +112,9 @@ router.post("/login", async (req, res) => {
 
     if (!isMatch) {
       return res.status(400).json({
-        message: "Invalid credentials"
+        success: false,
+        message:
+          "Invalid credentials"
       });
     }
 
@@ -84,13 +130,20 @@ router.post("/login", async (req, res) => {
     );
 
     res.status(200).json({
+      success: true,
       token,
-      user
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
     });
 
   } catch (error) {
 
     res.status(500).json({
+      success: false,
       message: error.message
     });
 
