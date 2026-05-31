@@ -48,8 +48,19 @@ router.get("/doctors", async (req, res) => {
 router.get("/appointments", async (req, res) => {
   try {
 
-    const appointments =
-      await Appointment.find();
+    const appointments = await Appointment.find()
+  .populate(
+    "patientId",
+    "name email"
+  )
+  .populate({
+    path: "doctorId",
+    populate: {
+      path: "userId",
+      select: "name email",
+    },
+  });
+      
 
     res.status(200).json(
       appointments
