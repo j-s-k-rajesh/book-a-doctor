@@ -29,7 +29,8 @@ router.get("/users", async (req, res) => {
 router.get("/doctors", async (req, res) => {
   try {
 
-    const doctors = await Doctor.find();
+    const doctors = await Doctor.find()
+  .populate("userId", "name email");
 
     res.status(200).json(doctors);
 
