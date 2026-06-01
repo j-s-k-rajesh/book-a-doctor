@@ -46,13 +46,15 @@ const Login = () => {
 
       if (user.role === "admin") {
         navigate("/admin/dashboard");
+      } else if (user.role === "doctor") {
+        navigate("/doctor/dashboard");
       } else {
         navigate("/");
       }
     } catch (error) {
       toast.error(
         error?.response?.data?.message ||
-          "Login failed"
+        "Login failed"
       );
     } finally {
       setLoading(false);

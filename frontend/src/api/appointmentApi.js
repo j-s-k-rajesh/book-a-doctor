@@ -13,3 +13,15 @@ export const createAppointment = async (appointmentData) => {
 
   return response.data;
 };
+
+export const updateAppointment = async (
+  id,
+  data
+) => {
+  const response = await api.put(
+    `/appointments/${id}`,
+    data
+  );
+
+  return response.data;
+};  

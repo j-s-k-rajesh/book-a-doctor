@@ -5,12 +5,12 @@ export const getUsers = async () => {
   return response.data;
 };
 
-export const getDoctorsAdmin = async () => {
+export const getDoctors = async () => {
   const response = await api.get("/admin/doctors");
   return response.data;
 };
 
-export const getAppointmentsAdmin = async () => {
+export const getAppointments = async () => {
   const response = await api.get("/admin/appointments");
   return response.data;
 };

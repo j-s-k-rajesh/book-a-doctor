@@ -3,16 +3,23 @@ import { Routes, Route } from "react-router-dom";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 
+// Patient Pages
 import Home from "../pages/user/Home";
 import Doctors from "../pages/user/Doctors";
 import DoctorProfile from "../pages/user/DoctorProfile";
 import BookAppointment from "../pages/user/BookAppointment";
 import MyAppointments from "../pages/user/MyAppointments";
 
+// Doctor Pages
+import DoctorDashboard from "../pages/doctor/Dashboard";
+import DoctorAppointments from "../pages/doctor/Appointments";
+import DoctorProfilePage from "../pages/doctor/Profile";
+
+// Admin Pages
 import Dashboard from "../pages/admin/Dashboard";
 import Users from "../pages/admin/Users";
 import AdminDoctors from "../pages/admin/Doctors";
-import Appointments from "../pages/admin/Appointments";
+import AdminAppointments from "../pages/admin/Appointments";
 
 import ProtectedRoute from "./ProtectedRoute";
 import RoleRoute from "./RoleRoute";
@@ -20,11 +27,20 @@ import RoleRoute from "./RoleRoute";
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* Public */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+      {/* ================= PUBLIC ================= */}
 
-      {/* Patient */}
+      <Route
+        path="/login"
+        element={<Login />}
+      />
+
+      <Route
+        path="/register"
+        element={<Register />}
+      />
+
+      {/* ================= PATIENT ================= */}
+
       <Route
         path="/"
         element={
@@ -70,7 +86,43 @@ const AppRoutes = () => {
         }
       />
 
-      {/* Admin */}
+      {/* ================= DOCTOR ================= */}
+
+      <Route
+        path="/doctor/dashboard"
+        element={
+          <ProtectedRoute>
+            <RoleRoute role="doctor">
+              <DoctorDashboard />
+            </RoleRoute>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/doctor/appointments"
+        element={
+          <ProtectedRoute>
+            <RoleRoute role="doctor">
+              <DoctorAppointments />
+            </RoleRoute>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/doctor/profile"
+        element={
+          <ProtectedRoute>
+            <RoleRoute role="doctor">
+              <DoctorProfilePage />
+            </RoleRoute>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* ================= ADMIN ================= */}
+
       <Route
         path="/admin/dashboard"
         element={
@@ -109,7 +161,7 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <RoleRoute role="admin">
-              <Appointments />
+              <AdminAppointments />
             </RoleRoute>
           </ProtectedRoute>
         }
